@@ -4,14 +4,12 @@ import java.util.Scanner;
 
 /**
  * @Author Agony
- * @Create 2023/3/17 18:08
+ * @Create 2023/3/19 16:10
  * @Version 1.0
  */
-public class ArrayQueueDemo {
-
+public class CircleArrayQueueDemo {
     public static void main(String[] args) {
-
-        ArrayQueue queue = new ArrayQueue(3);
+        CircleArray queue = new CircleArray(5);
         char key = ' '; // 接收用户输入
         Scanner scanner = new Scanner(System.in);//
         boolean loop = true;
@@ -56,30 +54,25 @@ public class ArrayQueueDemo {
                     break;
             }
         }
-
-        System.out.println("程序退出~~");
     }
 }
 
-class ArrayQueue {
+class CircleArray {
+    private int maxSize;
+    private int front;
+    private int rear;
+    private int[] arr;
 
-    private int maxSize; // 表示数组的最大容量
-    private int front; // 队列头
-    private int rear;   // 队列尾
-    private int[] arr;  // 该数组用来存放数据，模拟队列
-
-
-    // 创建队列的构造器
-    public ArrayQueue(int arrMaxSize) {
-        this.maxSize = arrMaxSize;
-        this.front = -1;
-        this.rear = -1;
-        arr = new int[arrMaxSize];
+    public CircleArray(int maxSize) {
+        this.maxSize = maxSize;
+        rear = 0;
+        front = 0;
+        arr = new int[this.maxSize];
     }
 
     // 判断队列是否满
     public boolean isFull() {
-        return rear == maxSize - 1;
+        return (rear + 1) % maxSize == front;
     }
 
     // 判断队列是否为空
@@ -93,8 +86,8 @@ class ArrayQueue {
         if (isFull()) {
             return;
         }
-        rear++;
         arr[rear] = n;
+        rear = (rear + 1) % maxSize;
     }
 
     // 获取队列的数据, 出队列
@@ -103,8 +96,9 @@ class ArrayQueue {
         if (isEmpty()) {
             throw new RuntimeException("数组为空");
         }
-        front++;
-        return arr[front];
+        int value = arr[front];
+        front = (front + 1) % maxSize;
+        return value;
 
     }
 
@@ -115,9 +109,14 @@ class ArrayQueue {
             System.out.println("数组为空");
             return;
         }
-        for (int i = 0; i < arr.length; i++) {
-            System.out.printf("arr[%d] = %d\n", i, arr[i]);
+        for (int i = front; i < front + size(); i++) {
+            System.out.printf("arr[%d] = %d\n", i % maxSize, arr[i % maxSize]);
         }
+    }
+
+    // 显示队列有效数据个数
+    public int size() {
+        return (rear + maxSize - front) % maxSize;
     }
 
     // 显示队列的头数据， 注意不是取出数据
@@ -125,6 +124,6 @@ class ArrayQueue {
         if (isEmpty()) {
             throw new RuntimeException("数组为空");
         }
-        return arr[front + 1];
+        return arr[front];
     }
 }
